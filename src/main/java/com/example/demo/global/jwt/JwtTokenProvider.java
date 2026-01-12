@@ -3,6 +3,7 @@ package com.example.demo.global.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +19,10 @@ public class JwtTokenProvider {
     private final SecretKey key;
 
     private static final String TOKEN_TYPE = "type";
+    @Value("jwt.access-token-validity")
     private static final String ACCESS_TOKEN = "access";
-    private static final String REFRESH_TOKEN = "refresh";
+    @Value("jwt.refresh-token-validity")
+    public static final String REFRESH_TOKEN = "refresh";
     private static final String USER_ID = "userId";
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
@@ -49,6 +52,12 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+    public boolean isAccessToken(String token) {
+        Claims claims = getClaims(token);
+        String tokenType = claims.get(TOKEN_TYPE, String.class);
+        return ACCESS_TOKEN.equals(tokenType);
     }
 
     public Claims getClaims(String token) {
@@ -94,4 +103,6 @@ public class JwtTokenProvider {
         Date expiration = getClaims(token).getExpiration();
         return expiration.getTime() - new Date().getTime();
     }
+
+
 }
