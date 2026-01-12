@@ -51,4 +51,7 @@ public class MemberDetails implements UserDetails {
     public MemberEntity getMember() {
         return member;
     }
+    public Long getUserId() {
+        return member.getId();
+    }
 }
