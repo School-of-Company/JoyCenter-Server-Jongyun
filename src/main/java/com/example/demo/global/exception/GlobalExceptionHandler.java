@@ -10,20 +10,29 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handle(GlobalException exception) {
+    @ExceptionHandler(GlobalException.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(GlobalException exception) {
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(exception.getErrorCode().getStatus())
                 .message(exception.getErrorCode().getMessage())
                 .build();
-        return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+
+        return ResponseEntity
+                .status(errorResponse.getStatus())
+                .body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception exception) {
-        log.error("처리되지 않은 예외가 발생했습니다: ", exception);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(500, exception.getMessage()));
 
+        log.error("처리되지 않은 예외가 발생했습니다", exception);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "서버 내부 오류"
+                ));
     }
 }
