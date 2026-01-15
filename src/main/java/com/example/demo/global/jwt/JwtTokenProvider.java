@@ -20,9 +20,9 @@ public class JwtTokenProvider {
 
     private static final String TOKEN_TYPE = "type";
     @Value("jwt.access-token-validity")
-    private static final String ACCESS_TOKEN = "access";
+    private final String ACCESS_TOKEN = "access";
     @Value("jwt.refresh-token-validity")
-    public static final String REFRESH_TOKEN = "refresh";
+    public final String REFRESH_TOKEN = "refresh";
     private static final String USER_ID = "userId";
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
@@ -58,6 +58,11 @@ public class JwtTokenProvider {
         Claims claims = getClaims(token);
         String tokenType = claims.get(TOKEN_TYPE, String.class);
         return ACCESS_TOKEN.equals(tokenType);
+    }
+    public boolean isRefreshToken(String token) {
+        Claims claims = getClaims(token);
+        String tokenType = claims.get(TOKEN_TYPE, String.class);
+        return REFRESH_TOKEN.equals(tokenType);
     }
 
     public Claims getClaims(String token) {
