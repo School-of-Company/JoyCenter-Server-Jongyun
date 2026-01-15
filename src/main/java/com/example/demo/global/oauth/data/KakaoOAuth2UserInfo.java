@@ -1,6 +1,6 @@
 package com.example.demo.global.oauth.data;
 
-import com.example.demo.global.oauth.OAuth2UserInfo;
+import com.example.demo.global.oauth.common.OAuthType;
 
 import java.util.Map;
 
@@ -16,8 +16,8 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
     }
 
     @Override
-    public String getProvider() {
-        return "kakao";
+    public OAuthType getProvider() {
+        return OAuthType.KAKAO;
     }
 
     @Override

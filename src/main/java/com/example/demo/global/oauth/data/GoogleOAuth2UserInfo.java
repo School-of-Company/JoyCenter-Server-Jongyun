@@ -1,7 +1,6 @@
 package com.example.demo.global.oauth.data;
 
-import com.example.demo.global.oauth.OAuth2UserInfo;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import com.example.demo.global.oauth.common.OAuthType;
 
 import java.util.Map;
 
@@ -18,9 +17,10 @@ public class GoogleOAuth2UserInfo implements OAuth2UserInfo {
     }
 
     @Override
-    public String getProvider() {
-        return "google";
+    public OAuthType getProvider() {
+        return OAuthType.GOOGLE;
     }
+
 
     @Override
     public String getEmail() {

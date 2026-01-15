@@ -13,10 +13,13 @@ public enum ErrorCode {
 
     // JWT 관련 에러
     JWT_INVALID(401, "유효하지 않은 JWT 토큰입니다."),
-    JWT_EXPIRED(401, "만료된 JWT 토큰입니다."),
+    INVALID_REFRESH_TOKEN(401, "만료된 JWT 토큰입니다."),
     JWT_UNSUPPORTED(401, "지원되지 않는 JWT 토큰입니다."),
     JWT_MALFORMED(401, "잘못된 형식의 JWT 토큰입니다."),
     JWT_SIGNATURE_INVALID(401, "JWT 서명이 유효하지 않습니다."),
+    UNAUTHORIZED(401, "이메일 또는 비밀번호가 잘못되었습니다."),
+    INVALID_TOKEN_TYPE(401, "Access Token으로는 재발급할 수 없습니다."),
+
 
     // 토큰 관련 에러
     REFRESH_TOKEN_NOT_FOUND(404, "Refresh Token을 찾을 수 없습니다."),

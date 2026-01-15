@@ -1,5 +1,6 @@
 package com.example.demo.domain.member.entity;
 
+import com.example.demo.global.oauth.common.OAuthType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "members")
+@Table(name = "member")
 public class MemberEntity {
 
     @Id
@@ -17,6 +18,13 @@ public class MemberEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private OAuthType provider;
+
+    @Column(name = "provider_id", nullable = false)
+    private String providerId;
+
 }

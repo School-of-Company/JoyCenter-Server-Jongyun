@@ -1,6 +1,6 @@
 package com.example.demo.global.security.config;
 
-import com.example.demo.domain.auth.service.CustomOAuth2UserService;
+import com.example.demo.global.oauth.service.CustomOAuth2UserService;
 import com.example.demo.global.security.filter.JwtAuthenticationFilter;
 import com.example.demo.global.security.handler.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
