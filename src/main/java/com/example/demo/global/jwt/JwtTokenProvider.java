@@ -3,7 +3,8 @@ package com.example.demo.global.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,23 +14,21 @@ import java.util.Date;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
-    private final SecretKey key;
+    private SecretKey key;
 
     private static final String TOKEN_TYPE = "type";
-    @Value("jwt.access-token-validity")
-    private final String ACCESS_TOKEN = "access";
-    @Value("jwt.refresh-token-validity")
-    public final String REFRESH_TOKEN = "refresh";
+    private static final String ACCESS_TOKEN = "access";
+    private static final String REFRESH_TOKEN = "refresh";
     private static final String USER_ID = "userId";
 
-    public JwtTokenProvider(JwtProperties jwtProperties) {
-        this.jwtProperties = jwtProperties;
-        this.key = Keys.hmacShaKeyFor(
-                jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8)
-        );
+    @PostConstruct
+    public void init() {
+        String secret = jwtProperties.getSecret();
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateAccessToken(Long userId, String email) {
@@ -50,19 +49,16 @@ public class JwtTokenProvider {
                 .claim(TOKEN_TYPE, type)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public boolean isAccessToken(String token) {
-        Claims claims = getClaims(token);
-        String tokenType = claims.get(TOKEN_TYPE, String.class);
-        return ACCESS_TOKEN.equals(tokenType);
+        return ACCESS_TOKEN.equals(getClaims(token).get(TOKEN_TYPE, String.class));
     }
+
     public boolean isRefreshToken(String token) {
-        Claims claims = getClaims(token);
-        String tokenType = claims.get(TOKEN_TYPE, String.class);
-        return REFRESH_TOKEN.equals(tokenType);
+        return REFRESH_TOKEN.equals(getClaims(token).get(TOKEN_TYPE, String.class));
     }
 
     public Claims getClaims(String token) {
@@ -108,6 +104,4 @@ public class JwtTokenProvider {
         Date expiration = getClaims(token).getExpiration();
         return expiration.getTime() - new Date().getTime();
     }
-
-
 }
