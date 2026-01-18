@@ -30,35 +30,30 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     private static final String[] PUBLIC_URLS = {
-            "/api/auth/**",           // 인증 관련
-            "/api/oauth2/**",         // OAuth2 로그인
-            "/login/oauth2/**",       // OAuth2 콜백
-            "/oauth2/**",             // OAuth2 리다이렉트
-            "/api/health",            // 헬스체크
-            "/error",                 // 에러 페이지
-            "/favicon.ico"            // 파비콘
+            "/api/auth/**",
+            "/api/oauth2/**",
+            "/login/oauth2/**",
+            "/oauth2/**",
+            "/api/health",
+            "/error",
+            "/favicon.ico"
     };
-
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-       return http
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors ->cors.configurationSource(corsConfigurationSource()))
-
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-
                 .formLogin(AbstractHttpConfigurer::disable)
-
                 .httpBasic(AbstractHttpConfigurer::disable)
-
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers("/api/attachments/**").authenticated()
                         .anyRequest().authenticated()
                 )
-
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(customOAuth2UserService)
@@ -75,26 +70,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
         configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-        ));
-
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-
         configuration.setAllowCredentials(true);
-
-        configuration.setExposedHeaders(List.of(
-                "Authorization",
-                "Refresh-Token"
-        ));
-
+        configuration.setExposedHeaders(List.of("Authorization", "Refresh-Token"));
         configuration.setMaxAge(3600L);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 }
