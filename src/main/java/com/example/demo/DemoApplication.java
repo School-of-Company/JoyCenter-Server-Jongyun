@@ -10,8 +10,9 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableJpaAuditing
-@EnableJpaRepositories(basePackages = "com.example.demo.domain.member.repository")
-@EnableRedisRepositories(basePackages = "com.example.demo.domain.auth.repository")
+@EnableJpaRepositories(
+        basePackages = "com.example.demo.domain"
+)
 public class DemoApplication {
 
 	public static void main(String[] args) {
