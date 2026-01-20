@@ -34,6 +34,9 @@ public enum ErrorCode {
     USER_ALREADY_EXISTS(409, "이미 존재하는 사용자입니다."),
     USER_UNAUTHORIZED(403, "권한이 없습니다."),
 
+    // 게시글 관련 에러
+    NOT_FOUND_POST(404, "존재하지 않는 게시글입니다."),
+
     //  서버 에러
     INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생했습니다."),
     BAD_REQUEST(400, "잘못된 요청입니다.");
