@@ -21,9 +21,9 @@ public class MemberEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String provider;
+    private OAuthType provider;
 
     @Column(name = "provider_id", nullable = false)
     private String providerId;
