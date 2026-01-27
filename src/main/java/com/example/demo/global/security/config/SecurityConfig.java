@@ -26,15 +26,12 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     private static final String[] PUBLIC_URLS = {
             "/api/auth/**",
             "/api/oauth2/**",
             "/login/oauth2/**",
             "/oauth2/**",
-            "/api/health",
             "/error",
             "/favicon.ico"
     };
@@ -53,12 +50,6 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers("/api/attachments/**").authenticated()
                         .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo ->
-                                userInfo.userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

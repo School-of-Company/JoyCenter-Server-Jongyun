@@ -1,10 +1,9 @@
 package com.example.demo.global.oauth.service;
 
 import com.example.demo.domain.member.entity.MemberEntity;
-import com.example.demo.global.oauth.common.OAuthType;
 import com.example.demo.global.oauth.data.OAuth2UserInfo;
+import com.example.demo.global.oauth.dto.OAuthUserResponse;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -18,29 +17,16 @@ public class OAuth2UserPrincipal implements OAuth2User {
 
     private final OAuth2UserInfo oAuth2UserInfo;
     private final MemberEntity memberEntity;
-    private Map<String, Object> attributes = Map.of();
+    private final Map<String, Object> attributes;
 
-    public OAuth2UserPrincipal(OAuth2UserInfo oAuth2UserInfo, MemberEntity memberEntity) {
+    public OAuth2UserPrincipal(OAuth2UserInfo oAuth2UserInfo, MemberEntity member, Map<String, Object> attributes) {
         this.oAuth2UserInfo = oAuth2UserInfo;
-        this.memberEntity = memberEntity;
-    }
-    public String getEmail() {
-        return oAuth2UserInfo.getEmail();
-    }
-    public MemberEntity getMember() {
-        return this.memberEntity;
+        this.memberEntity = member;
+        this.attributes = attributes;
     }
 
-    public OAuthType getProvider() {
-        return oAuth2UserInfo.getProvider();
-    }
-
-    public String getProviderId() {
-        return oAuth2UserInfo.getProviderId();
-    }
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
+    public OAuthUserResponse toResponse() {
+        return oAuth2UserInfo.toResponse();
     }
 
     @Override
@@ -50,7 +36,6 @@ public class OAuth2UserPrincipal implements OAuth2User {
 
     @Override
     public String getName() {
-        return oAuth2UserInfo.getProviderId();
+        return toResponse().providerId();
     }
 }
-

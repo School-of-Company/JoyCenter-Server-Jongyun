@@ -1,32 +1,32 @@
 package com.example.demo.global.oauth.data;
 
 import com.example.demo.global.oauth.common.OAuthType;
+import com.example.demo.global.oauth.dto.OAuthUserResponse;
 
 import java.util.Map;
 
 public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
-    private Map<String,Object> attributes;
+
+    private final Map<String, Object> attributes;
 
     public KakaoOAuth2UserInfo(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
-    @Override
-    public String getProviderId() {
-        return (String) attributes.get("sub");
-    }
 
     @Override
-    public OAuthType getProvider() {
-        return OAuthType.KAKAO;
-    }
+    public OAuthUserResponse toResponse() {
+        Map<String, Object> kakaoAccount =
+                (Map<String, Object>) attributes.get("kakao_account");
 
-    @Override
-    public String getEmail() {
-        return (String) attributes.get("email");
-    }
+        Map<String, Object> profile =
+                kakaoAccount != null
+                        ? (Map<String, Object>) kakaoAccount.get("profile")
+                        : null;
 
-    @Override
-    public String getName() {
-        return (String) attributes.get("name");
+        return new OAuthUserResponse(
+                String.valueOf(attributes.get("id")),
+                OAuthType.KAKAO,
+                kakaoAccount != null ? (String) kakaoAccount.get("email") : null
+        );
     }
 }
