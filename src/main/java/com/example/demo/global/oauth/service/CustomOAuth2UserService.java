@@ -23,53 +23,44 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberRepository memberRepository;
 
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest)
-            throws OAuth2AuthenticationException {
-
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
         try {
             return processOAuth2User(userRequest, oAuth2User);
         } catch (OAuth2AuthenticationException e) {
             throw e;
         } catch (Exception e) {
-            throw new InternalAuthenticationServiceException(
-                    e.getMessage(), e
-            );
+            throw new InternalAuthenticationServiceException(e.getMessage(), e);
         }
     }
 
-    private OAuth2User processOAuth2User(
-            OAuth2UserRequest userRequest,
-            OAuth2User oAuth2User) throws OAuth2AuthenticationProcessingException, IllegalAccessException {
+    private OAuth2User processOAuth2User(OAuth2UserRequest userRequest, OAuth2User oAuth2User)
+            throws OAuth2AuthenticationProcessingException, IllegalAccessException {
 
-        String registrationId = userRequest
-                .getClientRegistration()
-                .getRegistrationId();
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
-        OAuth2UserInfo oAuth2UserInfo =
-                OAuth2UserInfoFactory.getOAuth2UserInfo(
-                        registrationId,
-                        oAuth2User.getAttributes()
-                );
+        String email = oAuth2UserInfo.toResponse().email();
+        MemberEntity member = null;
 
-        if (!StringUtils.hasText(oAuth2UserInfo.getEmail())) {
-            throw new OAuth2AuthenticationProcessingException(
-                    "OAuth2 공급자에서 이메일을 찾을 수 없습니다."
-            );
+        if (StringUtils.hasText(email)) {
+            member = memberRepository.findByEmail(email).orElseGet(() -> registerNewMember(oAuth2UserInfo));
+        } else {
+            member = registerNewMember(oAuth2UserInfo);
         }
 
-        MemberEntity member = memberRepository.findByEmail(oAuth2UserInfo.getEmail())
-                .orElseGet(() -> registerNewMember(oAuth2UserInfo));
-
-        return new OAuth2UserPrincipal(oAuth2UserInfo, member);
+        return new OAuth2UserPrincipal(oAuth2UserInfo, member, oAuth2User.getAttributes());
     }
 
     private MemberEntity registerNewMember(OAuth2UserInfo oAuth2UserInfo) {
+        String email = oAuth2UserInfo.toResponse().email();
+        if (!StringUtils.hasText(email)) {
+            email = "temp_" + System.currentTimeMillis() + "@example.com";
+        }
         MemberEntity member = MemberEntity.builder()
-                .email(oAuth2UserInfo.getEmail())
-                .provider(oAuth2UserInfo.getProvider().name())
-                .providerId(oAuth2UserInfo.getProviderId())
+                .email(email)
+                .provider(oAuth2UserInfo.toResponse().provider().name())
+                .providerId(oAuth2UserInfo.toResponse().providerId())
                 .build();
         return memberRepository.saveAndFlush(member);
     }
