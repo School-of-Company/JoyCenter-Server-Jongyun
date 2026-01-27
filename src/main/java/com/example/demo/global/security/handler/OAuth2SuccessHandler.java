@@ -35,8 +35,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     ) throws IOException {
         OAuth2UserPrincipal principal = (OAuth2UserPrincipal) authentication.getPrincipal();
 
-        Long userId = principal.getMember().getId();
-        String email = principal.getMember().getEmail();
+        Long userId = principal.getMemberEntity().getId();
+        String email = principal.getMemberEntity().getEmail();
 
         log.info("OAuth2 로그인 성공: userId={}, email={}", userId, email);
 
