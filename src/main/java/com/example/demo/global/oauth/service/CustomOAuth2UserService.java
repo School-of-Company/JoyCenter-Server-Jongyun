@@ -59,7 +59,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         MemberEntity member = MemberEntity.builder()
                 .email(email)
-                .provider(oAuth2UserInfo.toResponse().provider().name())
+                .provider(oAuth2UserInfo.toResponse().provider())
                 .providerId(oAuth2UserInfo.toResponse().providerId())
                 .build();
         return memberRepository.saveAndFlush(member);
