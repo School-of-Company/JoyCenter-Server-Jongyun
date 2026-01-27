@@ -18,15 +18,20 @@ public class KakaoOAuth2UserInfo implements OAuth2UserInfo {
         Map<String, Object> kakaoAccount =
                 (Map<String, Object>) attributes.get("kakao_account");
 
-        Map<String, Object> profile =
-                kakaoAccount != null
-                        ? (Map<String, Object>) kakaoAccount.get("profile")
-                        : null;
+        String email = null;
+        if (kakaoAccount != null) {
+            email = (String) kakaoAccount.get("email");
+        }
+
+        if (email == null || email.isEmpty()) {
+            String id = String.valueOf(attributes.get("id"));
+            email = id + "@kakao.com";
+        }
 
         return new OAuthUserResponse(
                 String.valueOf(attributes.get("id")),
                 OAuthType.KAKAO,
-                kakaoAccount != null ? (String) kakaoAccount.get("email") : null
+                email
         );
     }
 }
