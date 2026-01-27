@@ -102,7 +102,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
     private MemberEntity registerMember(OAuthUserResponse userInfo) {
         return memberRepository.save(MemberEntity.builder()
                 .email(userInfo.email())
-                .provider(userInfo.provider().name())
+                .provider(userInfo.provider())
                 .providerId(userInfo.providerId())
                 .build());
     }
