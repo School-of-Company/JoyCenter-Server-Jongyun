@@ -3,10 +3,10 @@ package com.example.demo.domain.auth.service.impl;
 import com.example.demo.domain.auth.presentation.data.OAuthLoginRequest;
 import com.example.demo.domain.auth.presentation.data.TokenResponse;
 import com.example.demo.domain.auth.service.OAuthLoginService;
+import com.example.demo.domain.auth.service.RefreshTokenService;
 import com.example.demo.domain.member.entity.MemberEntity;
 import com.example.demo.domain.member.repository.MemberRepository;
 import com.example.demo.global.exception.oauth.OAuth2AuthenticationProcessingException;
-import com.example.demo.global.jwt.JwtTokenProvider;
 import com.example.demo.global.oauth.common.OAuthType;
 import com.example.demo.global.oauth.config.OAuthProviderConfig;
 import com.example.demo.global.oauth.data.ProviderProperties;
@@ -35,8 +35,8 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
 
     private final WebClient webClient;
     private final MemberRepository memberRepository;
-    private final JwtTokenProvider jwtTokenProvider;
     private final OAuthProviderConfig providerConfig;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public TokenResponse execute(OAuthLoginRequest request) throws OAuth2AuthenticationProcessingException {
@@ -49,10 +49,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         MemberEntity member = memberRepository.findByEmail(userInfo.email())
                 .orElseGet(() -> registerMember(userInfo));
 
-        return new TokenResponse(
-                jwtTokenProvider.generateAccessToken(member.getId(), member.getEmail()),
-                jwtTokenProvider.generateRefreshToken(member.getId(), member.getEmail())
-        );
+        return refreshTokenService.login(member.getId(), member.getEmail());
     }
 
     private OAuthUserResponse extractUserInfo(OAuthType type, Map<String, Object> attributes) throws OAuth2AuthenticationProcessingException {
