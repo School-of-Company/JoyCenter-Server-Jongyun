@@ -13,46 +13,50 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-    private static final long REFRESH_TTL = 7 * 24 * 60 * 60;
-
-    @Override
-    public void save(Long userId, String refreshToken) {
-        RefreshToken token = refreshTokenRepository.findById(userId)
-                .orElse(RefreshToken.builder()
-                        .userId(userId)
-                        .build());
-
-        token.updateToken(refreshToken, REFRESH_TTL);
-        refreshTokenRepository.save(token);
-    }
+    private static final long REFRESH_TTL = 604800;
 
     @Override
     @Transactional
+    public TokenResponse login(Long userId, String email) {
+
+        String accessToken = jwtTokenProvider.generateAccessToken(userId, email);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(userId, email);
+
+        RefreshToken tokenEntity = RefreshToken.builder()
+                .userId(userId)
+                .token(refreshToken)
+                .ttl(REFRESH_TTL)
+                .build();
+
+        System.out.println("--- Redis 저장 시도 ---");
+        refreshTokenRepository.save(tokenEntity);
+        System.out.println("--- Redis 저장 완료! 현재 저장된 총 개수: " + refreshTokenRepository.count() + " ---");
+
+        return new TokenResponse(accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public TokenResponse reissueAccessToken(String refreshToken) {
         jwtTokenProvider.validateToken(refreshToken);
-
-        RefreshToken stored = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new GlobalException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
         Long userId = jwtTokenProvider.getUserId(refreshToken);
         String email = jwtTokenProvider.getUserEmail(refreshToken);
 
-        String newAccessToken =
-                jwtTokenProvider.generateAccessToken(userId, email);
+        RefreshToken stored = refreshTokenRepository.findById(userId)
+                .orElseThrow(() -> new GlobalException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
 
-        return TokenResponse.builder()
-                .accessToken(newAccessToken)
-                .build(); // refresh는 안 줌
-    }
+        if (!stored.getToken().equals(refreshToken)) {
+            throw new GlobalException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
 
-    @Override
-    public void delete(Long userId) {
-        refreshTokenRepository.deleteById(userId);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(userId, email);
+
+        return new TokenResponse(newAccessToken, refreshToken);
     }
 }
