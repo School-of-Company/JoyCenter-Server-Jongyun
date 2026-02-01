@@ -59,7 +59,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return request.getMethod().equalsIgnoreCase("OPTIONS")
                 || pathMatcher.match("/api/auth/**", uri)
                 || pathMatcher.match("/api/oauth2/**", uri)
-                || pathMatcher.match("/login/oauth2/**", uri);
+                || pathMatcher.match("/login/oauth2/**", uri)
+                || pathMatcher.match("/swagger-ui/**", uri)
+                || pathMatcher.match("/v3/api-docs/**", uri)
+                || pathMatcher.match("/swagger-ui.html", uri)
+                || pathMatcher.match("/swagger-resources/**", uri)
+                || pathMatcher.match("/webjars/**", uri);
     }
 }
 
