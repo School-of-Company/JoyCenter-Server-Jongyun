@@ -33,7 +33,12 @@ public class SecurityConfig {
             "/login/oauth2/**",
             "/oauth2/**",
             "/error",
-            "/favicon.ico"
+            "/favicon.ico",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/webjars/**"
     };
 
     @Bean
