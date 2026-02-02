@@ -46,7 +46,6 @@ public class FindAllPostServiceImpl implements FindAllPostService {
 
     private PostListResponse.Item toItem(PostEntity post) {
 
-        // 썸네일: 가장 앞에 있는 IMAGE 블록 1개
         PostListResponse.Thumbnail thumbnail =
                 postBlockRepository.findAllByPostIdOrderByBlockOrderAsc(post.getId())
                         .stream()
@@ -64,7 +63,9 @@ public class FindAllPostServiceImpl implements FindAllPostService {
                 new PostListResponse.Member(
                         post.getAuthor().getId(),
                         post.getAuthorName()
+
                 ),
+                post.getCreatedAt(),
                 thumbnail
         );
     }
