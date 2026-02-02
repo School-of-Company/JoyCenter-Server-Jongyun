@@ -66,7 +66,7 @@ public class OAuthLoginServiceImpl implements OAuthLoginService {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");
         formData.add("code", request.code());
-        formData.add("redirect_uri", request.redirectUri());
+        formData.add("redirect_uri", provider.redirectUri());
         formData.add("client_id", provider.clientId());
         formData.add("client_secret", provider.clientSecret());
 

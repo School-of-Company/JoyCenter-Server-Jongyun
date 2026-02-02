@@ -4,6 +4,7 @@ public record ProviderProperties(
         String clientId,
         String clientSecret,
         String tokenUri,
-        String userInfoUri
+        String userInfoUri,
+        String redirectUri
 ) {
 }

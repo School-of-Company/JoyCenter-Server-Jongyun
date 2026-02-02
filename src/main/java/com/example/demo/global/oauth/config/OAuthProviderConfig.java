@@ -17,17 +17,20 @@ public class OAuthProviderConfig {
             @Value("${spring.security.oauth2.client.registration.google.client-secret}") String googleClientSecret,
             @Value("${spring.security.oauth2.client.provider.google.token-uri}") String googleTokenUri,
             @Value("${spring.security.oauth2.client.provider.google.user-info-uri}") String googleUserInfoUri,
+            @Value("${spring.security.oauth2.client.registration.google.redirect-uri}") String googleRedirectUri,
             @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String kakaoClientId,
             @Value("${spring.security.oauth2.client.registration.kakao.client-secret}") String kakaoClientSecret,
             @Value("${spring.security.oauth2.client.provider.kakao.token-uri}") String kakaoTokenUri,
-            @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}") String kakaoUserInfoUri) {
+            @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}") String kakaoUserInfoUri,
+            @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String kakaoRedirectUri
+            ) {
 
         providers = Map.of(
                 OAuthType.GOOGLE, new ProviderProperties(
-                        googleClientId, googleClientSecret, googleTokenUri, googleUserInfoUri
+                        googleClientId, googleClientSecret, googleTokenUri, googleUserInfoUri,googleRedirectUri
                 ),
                 OAuthType.KAKAO, new ProviderProperties(
-                        kakaoClientId, kakaoClientSecret, kakaoTokenUri, kakaoUserInfoUri
+                        kakaoClientId, kakaoClientSecret, kakaoTokenUri, kakaoUserInfoUri ,kakaoRedirectUri
                 )
         );
     }
